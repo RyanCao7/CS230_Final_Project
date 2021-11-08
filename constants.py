@@ -42,3 +42,9 @@ GPU = 'cuda:0'
 # --- Visuals are saved under {classification/bounding_box}/{model_type}/{model_name}/{img_name}.png ---
 CLASSIFICATION_VIZ_DIR = 'classification_viz'
 BOUNDING_BOX_VIZ_DIR = 'bounding_box_viz'
+
+def get_classification_viz_save_dir(model_type, model_name):
+    return os.path.join(CLASSIFICATION_VIZ_DIR, model_type, model_name)
+
+def get_bounding_box_viz_save_dir(model_type, model_name):
+    return os.path.join(BOUNDING_BOX_VIZ_DIR, model_type, model_name)

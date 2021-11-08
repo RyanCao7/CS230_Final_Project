@@ -3,7 +3,10 @@ from torchvision.models.resnet import ResNet, BasicBlock, Bottleneck
 import constants
 
 def get_CXR_resnet_18_classifier():
-    return ResNet(BasicBlock, num_classes=17)
+    """
+    See https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py#L301
+    """
+    return ResNet(BasicBlock, [2, 2, 2, 2], num_classes=17)
 
 def get_model(model_type):
     if model_type == 'classifier_resnet_18':

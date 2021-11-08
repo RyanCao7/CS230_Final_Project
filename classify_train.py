@@ -1,6 +1,7 @@
-import os
+import glob
 import json
 import matplotlib.pyplot as plt
+import os
 import seaborn as sns
 sns.set_theme()
 
@@ -9,6 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as T
+from torch.utils.data import DataLoader
 import numpy as np
 
 from tqdm import tqdm
@@ -150,7 +152,7 @@ def main():
     
     # --- Model and viz save dir ---
     model_save_dir = constants.get_classification_model_save_dir(args.model_type, args.model_name)
-    viz_save_dir = get_bounding_box_model_save_dir(args.model_type, args.model_name)
+    viz_save_dir = constants.get_classification_viz_save_dir(args.model_type, args.model_name)
     if os.path.isdir(model_save_dir):
         raise RuntimeError(f'Error: {model_save_dir} already exists! Exiting...')
     elif os.path.isdir(viz_save_dir):

@@ -1,3 +1,5 @@
+import glob
+import numpy as np
 import os
 import torch
 import torch.nn.functional as F
@@ -21,7 +23,7 @@ class CXR_Classification_Dataset(Dataset):
             self.data_path = constants.CLASSIFICATION_TEST_DIR
             self.label_path = constants.CLASSIFICATION_TEST_LABELS_DIR
         else:
-            print(f'Error: mode should be one of \{train, val, test\} but got {mode} instead.')
+            print(f'Error: mode should be one of [train, val, test] but got {mode} instead.')
 
         # --- Construct mapping from indices to examples ---
         self.data_filenames = sorted(list(glob.glob(os.path.join(self.data_path, '*'))))
@@ -37,5 +39,5 @@ class CXR_Classification_Dataset(Dataset):
 
         return x, y
 
-    def __len__(self, idx):
+    def __len__(self):
         return len(self.data_filenames)

@@ -9,13 +9,13 @@ def get_classify_train_args():
     parser = argparse.ArgumentParser()
 
     # --- Dataset ---
-    parser.add_argument('--train-examples-dir', type=str, required=True, help='Train set examples dir', 
+    parser.add_argument('--train-examples-dir', type=str, help='Train set examples dir', 
                         default=constants.CLASSIFICATION_TRAIN_DIR)
-    parser.add_argument('--train-labels-dir', type=str, required=True, help='Train set labels dir', 
+    parser.add_argument('--train-labels-dir', type=str, help='Train set labels dir', 
                         default=constants.CLASSIFICATION_TRAIN_LABELS_DIR)
-    parser.add_argument('--val-examples-dir', type=str, required=True, help='Val set examples dir', 
+    parser.add_argument('--val-examples-dir', type=str, help='Val set examples dir', 
                         default=constants.CLASSIFICATION_VAL_DIR)
-    parser.add_argument('--val-labels-dir', type=str, required=True, help='Val set labels dir', 
+    parser.add_argument('--val-labels-dir', type=str, help='Val set labels dir', 
                         default=constants.CLASSIFICATION_VAL_LABELS_DIR)
 
     # --- Model ---
