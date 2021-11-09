@@ -9,7 +9,6 @@ import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision.transforms as T
 from torch.utils.data import DataLoader
 import numpy as np
 
@@ -21,23 +20,6 @@ import models
 import opts
 import utils
 import viz_utils
-
-
-def get_preprocess_transforms():
-    """
-    Returns a torchvision.transforms composition to apply.
-    Note that mean/std were computed via the script within utils.py
-    """
-
-    preprocess_transforms = T.Compose([
-       T.Resize(224),
-       T.Normalize(
-           mean=[129.1120817169278],
-           std=[64.12445895568287]
-       )
-    ])
-    
-    return preprocess_transforms
 
 
 def train_one_epoch(model, train_dataloader, criterion, opt):
@@ -172,8 +154,8 @@ def main():
 
     # --- Dataloaders ---
     print('--> Setting up dataloaders...')
-    train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
-    val_dataloader = DataLoader(val_dataset, batch_size=16, shuffle=True, num_workers=4)
+    train_dataloader = DataLoader(train_dataset, batch_size=8, shuffle=True, num_workers=4)
+    val_dataloader = DataLoader(val_dataset, batch_size=8, shuffle=True, num_workers=4)
     print('Done!\n')
 
     # --- Setup model ---
@@ -191,8 +173,8 @@ def main():
     
     # --- Loss fn ---
     # TODO(ryancao): Is this correct for multi-label training?
-    criterion = nn.BCELoss().cuda(constants.GPU)
-    
+    criterion = nn.BCEWithLogitsLoss().cuda(constants.GPU)
+
     # --- Train ---
     train_losses, train_accuracies, val_losses, val_accuracies =\
         train(args, model, train_dataloader, val_dataloader, criterion, opt)
