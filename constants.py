@@ -4,6 +4,7 @@ import os
 MODES = ['train', 'val', 'test']
 DATASET_DIR = 'dataset'
 CLASSIFICATION_DATA_DIR = 'numpy_classification_data'
+DETECTION_DATA_DIR = 'numpy_bbox_data'
 TRAIN_DIR = 'train'
 VAL_DIR = 'val'
 TEST_DIR = 'test'
@@ -12,6 +13,24 @@ VAL_LABELS_DIR = 'val_labels'
 TEST_LABELS_DIR = 'test_labels'
 IMG_RESIZE_DIM = 224
 
+LABELS_TO_IDXS = {
+    'Cardiomegaly': 0, 
+    'Emphysema': 1, 
+    'Effusion': 2, 
+    'No Finding': 3, 
+    'Hernia': 4, 
+    'Infiltration': 5, 
+    'Mass': 6, 
+    'Nodule': 7, 
+    'Atelectasis': 8, 
+    'Pneumothorax': 9, 
+    'Pleural_Thickening': 10, 
+    'Pneumonia': 11, 
+    'Fibrosis': 12, 
+    'Edema': 13, 
+    'Infiltrate': 5
+}
+
 # --- Classification dataset path constants ---
 CLASSIFICATION_TRAIN_DIR = os.path.join(DATASET_DIR, CLASSIFICATION_DATA_DIR, TRAIN_DIR)
 CLASSIFICATION_TRAIN_LABELS_DIR = os.path.join(DATASET_DIR, CLASSIFICATION_DATA_DIR, TRAIN_LABELS_DIR)
@@ -19,6 +38,12 @@ CLASSIFICATION_VAL_DIR = os.path.join(DATASET_DIR, CLASSIFICATION_DATA_DIR, VAL_
 CLASSIFICATION_VAL_LABELS_DIR = os.path.join(DATASET_DIR, CLASSIFICATION_DATA_DIR, VAL_LABELS_DIR)
 CLASSIFICATION_TEST_DIR = os.path.join(DATASET_DIR, CLASSIFICATION_DATA_DIR, TEST_DIR)
 CLASSIFICATION_TEST_LABELS_DIR = os.path.join(DATASET_DIR, CLASSIFICATION_DATA_DIR, TEST_LABELS_DIR)
+
+# --- Detection dataset path constants ---
+DETECTION_TRAIN_DIR = os.path.join(DATASET_DIR, DETECTION_DATA_DIR, TRAIN_DIR)
+DETECTION_TRAIN_LABELS_DIR = os.path.join(DATASET_DIR, DETECTION_DATA_DIR, TRAIN_LABELS_DIR)
+DETECTION_VAL_DIR = os.path.join(DATASET_DIR, DETECTION_DATA_DIR, VAL_DIR)
+DETECTION_VAL_LABELS_DIR = os.path.join(DATASET_DIR, DETECTION_DATA_DIR, VAL_LABELS_DIR)
 
 # --- Models are saved under {classification/bounding_box}/{model_type}/{model_name}/{epoch}.pth ---
 CLASSIFICATION_MODEL_DIR = 'classification_models'
