@@ -63,7 +63,7 @@ def train_one_epoch(model, train_dataloader, criterion, opt, args):
         avg_loss = total_loss / total_examples
         avg_iou = total_iou / total_examples
         
-        if idx % args.print_every_minibatch == 0:
+        if idx % args.print_every_train_minibatch == 0:
             tqdm.write(f'Train minibatch number: {idx} | Avg loss: {avg_loss} | Avg iou: {avg_iou}')
 
 
@@ -162,7 +162,7 @@ def eval_model(model, val_dataloader, criterion, args):
 
             avg_loss = total_loss / total_examples
             avg_iou = total_iou / total_examples
-            if idx % args.print_every_minibatch == 0:
+            if idx % args.print_every_eval_minibatch == 0:
                 tqdm.write(f'Val minibatch number: {idx} | Avg loss: {avg_loss} | Avg iou: {avg_iou}')
 
     return avg_loss, avg_iou, total_examples
@@ -237,9 +237,9 @@ def main():
     print('Done!\n')
     
     # --- Loss fn ---
-    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.Tensor([args.pos_weight] * len(constants.LABELS_TO_IDXS))).cuda(constants.GPU)
-    # criterion = nn.CrossEntropyLoss().cuda(constants.GPU)
-    # criterion = models.WeightedBCEWithLogitsLoss(weights=[1, 1])
+    pos_weight = torch.Tensor(constants.get_indexes_to_weights())
+    print(pos_weight)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda(constants.GPU)
 
     # --- Train ---
     train_losses, train_ious, val_losses, val_ious =\

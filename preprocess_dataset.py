@@ -106,6 +106,7 @@ def preprocess_train_val_test_data():
     
     print('Index to labels:')
     print(idx_to_labels)
+    exit()
 
     # --- Go through all images in all image directories ---
     for image_dir in sorted(glob.glob(os.path.join(constants.DATASET_DIR, 'images_0*'))):

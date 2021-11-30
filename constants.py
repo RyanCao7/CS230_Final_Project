@@ -13,59 +13,77 @@ VAL_LABELS_DIR = 'val_labels'
 TEST_LABELS_DIR = 'test_labels'
 IMG_RESIZE_DIM = 224
 
-LABELS_TO_IDXS = {
-    'Cardiomegaly': 0, 
-    'Emphysema': 1, 
-    'Effusion': 2, 
-    'No Finding': 3, 
-    'Hernia': 4, 
-    'Infiltration': 5, 
-    'Mass': 6, 
-    'Nodule': 7, 
-    'Atelectasis': 8, 
-    'Pneumothorax': 9, 
-    'Pleural_Thickening': 10, 
-    'Pneumonia': 11, 
-    'Fibrosis': 12, 
-    'Edema': 13, 
-    'Infiltrate': 5
+# LABELS_TO_IDXS = {
+#     'Cardiomegaly': 0, 
+#     'Emphysema': 1, 
+#     'Effusion': 2, 
+#     'No Finding': 3, 
+#     'Hernia': 4, 
+#     'Infiltration': 5, 
+#     'Mass': 6, 
+#     'Nodule': 7, 
+#     'Atelectasis': 8, 
+#     'Pneumothorax': 9, 
+#     'Pleural_Thickening': 10, 
+#     'Pneumonia': 11, 
+#     'Fibrosis': 12, 
+#     'Edema': 13, 
+#     'Infiltrate': 5
+# }
+
+# --- This comes straight out of the preprocessing script! ---
+IDXS_TO_LABELS = {
+    0: 'Cardiomegaly',
+    1: 'Emphysema',
+    2: 'Effusion',
+    3: 'No Finding',
+    4: 'Hernia',
+    5: 'Infiltration',
+    6: 'Mass',
+    7: 'Nodule',
+    8: 'Atelectasis',
+    9: 'Pneumothorax',
+    10: 'Pleural_Thickening',
+    11: 'Pneumonia',
+    12: 'Fibrosis',
+    13: 'Edema',
+    14: 'Consolidation'
 }
 
 WEIGHTS = {
-    'No Finding': 1.0,
-    'Infiltration': 3.034130893736805,
-    'Atelectasis': 5.221991521757937,
-    'Effusion': 4.532627468649095,
-    'Nodule': 9.534196809350814,
-    'Pneumothorax': 11.384571859675594,
-    'Mass': 10.439467312348668,
-    'Consolidation': 12.933576173130492,
-    'Pleural_Thickening': 17.831905465288035,
     'Cardiomegaly': 21.743876080691642,
     'Emphysema': 23.990858505564386,
+    'Effusion': 4.532627468649095,
+    'No Finding': 1.0,
+    'Hernia': 265.9074889867842,
+    'Infiltration': 3.034130893736805,
+    'Mass': 10.439467312348668,
+    'Nodule': 9.534196809350814,
+    'Atelectasis': 5.221991521757937,
+    'Pneumothorax': 11.384571859675594,
+    'Pleural_Thickening': 17.831905465288035,
+    'Pneumonia': 42.18099231306778,
     'Fibrosis': 35.801304863582445,
     'Edema': 26.209726443768997,
-    'Pneumonia': 42.18099231306778,
-    'Hernia': 265.9074889867842
+    'Consolidation': 12.933576173130492,
 }
 
-def get_indexes_to_labels():
-    """
-    Note: This returns a dict, not a list!
-    """
-    ret = dict()
-    for (label, index) in LABELS_TO_IDXS.items():
-        ret[index] = label
-    return ret
+# def get_indexes_to_labels():
+#     """
+#     Note: This returns a dict, not a list!
+#     """
+#     ret = dict()
+#     for (label, index) in LABELS_TO_IDXS.items():
+#         ret[index] = label
+#     return ret
 
 def get_indexes_to_weights():
     """
     Note: This returns a list, not a Tensor!
     """
     weights = list()
-    indexes_to_labels = get_indexes_to_labels()
-    for idx in range(len(indexes_to_labels)):
-        label = indexes_to_labels[idx]
+    for idx in range(len(IDXS_TO_LABELS)):
+        label = IDXS_TO_LABELS[idx]
         weights.append(WEIGHTS[label])
     return weights
 
