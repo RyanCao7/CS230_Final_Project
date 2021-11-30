@@ -22,7 +22,7 @@ import utils
 import viz_utils
 
 
-def train_one_epoch(model, train_dataloader, criterion, opt):
+def train_one_epoch(model, train_dataloader, criterion, opt, args):
 
     # --- Time to train! ---
     total_loss = 0
@@ -59,12 +59,13 @@ def train_one_epoch(model, train_dataloader, criterion, opt):
         opt.zero_grad()
         loss.backward()
         opt.step()
+
+        avg_loss = total_loss / total_examples
+        avg_iou = total_iou / total_examples
         
-        if idx % 100 == 0:
+        if idx % args.print_every_minibatch == 0:
             tqdm.write(f'Train minibatch number: {idx} | Avg loss: {avg_loss} | Avg iou: {avg_iou}')
 
-    avg_loss = total_loss / total_examples
-    avg_iou = total_iou / total_examples
 
     return avg_loss, avg_iou, total_examples
 
@@ -79,27 +80,22 @@ def train(args, model, train_dataloader, val_dataloader, criterion, opt):
     val_losses = dict()
     val_ious = dict()
     viz_path = constants.get_classification_viz_save_dir(args.model_type, args.model_name)
+    model_save_dir = constants.get_classification_model_save_dir(args.model_type, args.model_name)
     
     for epoch in range(args.num_epochs):
 
         if epoch % args.eval_every == 0:
             # --- Time to evaluate! ---
-            val_loss, val_iou, _ = eval_model(model, val_dataloader, criterion)
+            val_loss, val_iou, _ = eval_model(model, val_dataloader, criterion, args)
             val_losses[epoch] = (val_loss)
             val_ious[epoch] = (val_iou)
             
             # --- Report and plot losses/ious ---
             print(f' Val loss: {val_loss} | Val iou: {val_iou}\n')
             viz_utils.plot_losses_ious(val_losses, val_ious, viz_path, prefix='val')
-
-        # --- Only save actual model files every so often ---
-        model_save_path = os.path.join(model_save_dir, f'model_epoch_{epoch}.pth')
-        print(f'Saving model to {model_save_path}...')
-        torch.save(model.state_dict(), model_save_path)
-        exit()
             
         # --- Train ---
-        train_loss, train_iou, _ = train_one_epoch(model, train_dataloader, criterion, opt)
+        train_loss, train_iou, _ = train_one_epoch(model, train_dataloader, criterion, opt, args)
         train_losses[epoch] = train_loss
         train_ious[epoch] = train_iou
 
@@ -111,11 +107,17 @@ def train(args, model, train_dataloader, val_dataloader, criterion, opt):
         # --- Then save all train stats ---
         viz_utils.plot_losses_ious(train_losses, train_ious, viz_path, prefix='train')
         save_train_stats(train_losses, train_ious, val_losses, val_ious, args)
+        
+        # --- Only save actual model files every so often ---
+        if epoch % args.save_every == 0:
+            model_save_path = os.path.join(model_save_dir, f'model_epoch_{epoch}.pth')
+            print(f'Saving model to {model_save_path}...')
+            torch.save(model.state_dict(), model_save_path)
 
     return train_losses, train_ious, val_losses, val_ious
 
 
-def eval_model(model, val_dataloader, criterion):
+def eval_model(model, val_dataloader, criterion, args):
     '''
     Evaluates model over validation set.
     '''
@@ -160,7 +162,7 @@ def eval_model(model, val_dataloader, criterion):
 
             avg_loss = total_loss / total_examples
             avg_iou = total_iou / total_examples
-            if idx % 100 == 0:
+            if idx % args.print_every_minibatch == 0:
                 tqdm.write(f'Val minibatch number: {idx} | Avg loss: {avg_loss} | Avg iou: {avg_iou}')
 
     return avg_loss, avg_iou, total_examples
@@ -169,6 +171,7 @@ def eval_model(model, val_dataloader, criterion):
 def save_train_stats(train_losses, train_ious, val_losses, val_ious, args):
     """Save train stats"""
 
+    model_save_dir = constants.get_classification_model_save_dir(args.model_type, args.model_name)
     train_stats = {
         'train_losses': train_losses,
         'train_ious': train_ious,
