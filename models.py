@@ -2,6 +2,7 @@
 from torchvision_resnet import ResNet, Bottleneck, BasicBlock
 # import torchvision.models.resnet as tv_resnet
 import torch.nn as nn
+import torch
 
 import constants
 
@@ -70,3 +71,28 @@ def get_model(model_type):
         return get_CXR_resnet_18_classifier()
     else:
         raise RuntimeError(f'Error: Specified model is not one of {constants.MODEL_TYPES}. Aborting.')
+
+
+def WeightedBCEWithLogitsLoss(weights=[1, 1]):
+    """
+    Weighted BCE loss which takes in raw logits.
+    Not numerically stable...
+    """
+    def loss_fn(y, y_hat_logits, reduce_fn=torch.mean):
+        y_hat = torch.sigmoid(y_hat_logits)
+        # print(y)
+        # print(y_hat)
+        loss = -1 * (weights[0] * y * torch.log(y_hat) + weights[1] * (1 - y) * torch.log(1 - y_hat))
+        # print(loss, loss.shape)
+        loss = torch.sum(loss, dim=1)
+        # print(loss, loss.shape)
+        loss = reduce_fn(loss)
+        # print(loss, loss.shape)
+        return loss
+        # return reduce_fn(
+        #     torch.sum(
+        #         -1 * (weights[0] * y * torch.log(y_hat) + weights[1] * (1 - y) * torch.log(1 - y_hat)),
+        #     dim=1),
+        # dim=0)
+        
+    return loss_fn

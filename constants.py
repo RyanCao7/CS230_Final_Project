@@ -31,6 +31,44 @@ LABELS_TO_IDXS = {
     'Infiltrate': 5
 }
 
+WEIGHTS = {
+    'No Finding': 1.0,
+    'Infiltration': 3.034130893736805,
+    'Atelectasis': 5.221991521757937,
+    'Effusion': 4.532627468649095,
+    'Nodule': 9.534196809350814,
+    'Pneumothorax': 11.384571859675594,
+    'Mass': 10.439467312348668,
+    'Consolidation': 12.933576173130492,
+    'Pleural_Thickening': 17.831905465288035,
+    'Cardiomegaly': 21.743876080691642,
+    'Emphysema': 23.990858505564386,
+    'Fibrosis': 35.801304863582445,
+    'Edema': 26.209726443768997,
+    'Pneumonia': 42.18099231306778,
+    'Hernia': 265.9074889867842
+}
+
+def get_indexes_to_labels():
+    """
+    Note: This returns a dict, not a list!
+    """
+    ret = dict()
+    for (label, index) in LABELS_TO_IDXS.items():
+        ret[index] = label
+    return ret
+
+def get_indexes_to_weights():
+    """
+    Note: This returns a list, not a Tensor!
+    """
+    weights = list()
+    indexes_to_labels = get_indexes_to_labels()
+    for idx in range(len(indexes_to_labels)):
+        label = indexes_to_labels[idx]
+        weights.append(WEIGHTS[label])
+    return weights
+
 # --- Classification dataset path constants ---
 CLASSIFICATION_TRAIN_DIR = os.path.join(DATASET_DIR, CLASSIFICATION_DATA_DIR, TRAIN_DIR)
 CLASSIFICATION_TRAIN_LABELS_DIR = os.path.join(DATASET_DIR, CLASSIFICATION_DATA_DIR, TRAIN_LABELS_DIR)
@@ -62,6 +100,7 @@ MODEL_TYPES = [
 # --- Training ---
 DEFAULT_CLASSIFICATION_EPOCHS = 250
 DEFAULT_CLASSIFICATION_LR = 3e-4
+DEFAULT_POS_WEIGHT = 10 # --- How much to weight positive examples over negative ones for each class ---
 GPU = 'cuda:0'
 
 # --- Visuals are saved under {classification/bounding_box}/{model_type}/{model_name}/{img_name}.png ---

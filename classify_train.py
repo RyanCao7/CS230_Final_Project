@@ -34,15 +34,15 @@ def train_one_epoch(model, train_dataloader, criterion, opt, args):
     for idx, (x, y) in tqdm(enumerate(train_dataloader), total=len(train_dataloader)):
 
         # --- Move to GPU ---
-        # x = x.cuda(constants.GPU, non_blocking=True)
-        # y = y.cuda(constants.GPU, non_blocking=True)
+        x = x.cuda(constants.GPU, non_blocking=True)
+        y = y.cuda(constants.GPU, non_blocking=True)
 
-        # --- Compute output ---
-        output = model(x)
-        loss = criterion(output, y)
+        # --- Compute logits ---
+        logits = model(x)
+        loss = criterion(logits, y)
 
         # --- Bookkeeping ---
-        preds = torch.round(torch.sigmoid(output))
+        preds = torch.round(torch.sigmoid(logits))
 
         # --- Metric: IoU, i.e. total number of *correct* positive predictions ---
         # --- out of total number of positive predictions/labels overall ---
@@ -132,17 +132,17 @@ def eval_model(model, val_dataloader, criterion, args):
         for idx, (x, y) in tqdm(enumerate(val_dataloader), total=len(val_dataloader)):
 
             # --- Move to GPU ---
-            # x = x.cuda(constants.GPU, non_blocking=True)
-            # y = y.cuda(constants.GPU, non_blocking=True)
+            x = x.cuda(constants.GPU, non_blocking=True)
+            y = y.cuda(constants.GPU, non_blocking=True)
 
-            # --- Compute output ---
-            output = model(x)
-            loss = criterion(y, output)
+            # --- Compute logits ---
+            logits = model(x)
+            loss = criterion(y, logits)
 
             # --- Bookkeeping ---
             # --- TODO(ryancao): What's the metric for multi-label classification? ---
             # --- Metric: IoU, but class-wise ---
-            preds = torch.round(torch.sigmoid(output))
+            preds = torch.round(torch.sigmoid(logits))
 
             intersection = y * preds
             union = torch.maximum(y, preds)
@@ -153,7 +153,7 @@ def eval_model(model, val_dataloader, criterion, args):
             total_iou += torch.sum(intersection_sum / union_sum).item()
             total_examples += y.shape[0]
             
-            # print(output, '\n')
+            # print(logits, '\n')
             # print(intersection, intersection.shape, '\n')
             # print(union, union.shape, '\n')
             # print(union_sum, union_sum.shape, '\n')
@@ -178,11 +178,10 @@ def save_train_stats(train_losses, train_ious, val_losses, val_ious, args):
         'val_losses': val_losses,
         'val_ious': val_ious,
         'model_type': args.model_type,
-        'dataset_type': args.dataset_type,
-        'train_logits_dir': args.train_logits_dir,
-        'train_adv_logits_dir': args.train_adv_logits_dir,
-        'val_logits_dir': args.val_logits_dir,
-        'val_adv_logits_dir': args.val_adv_logits_dir,
+        'train_examples_dir': args.train_examples_dir,
+        'train_labels_dir': args.train_labels_dir,
+        'val_examples_dir': args.val_examples_dir,
+        'val_labels_dir': args.val_labels_dir,
     }
     train_stats_save_path = os.path.join(model_save_dir, 'train_stats.json')
     print(f'Saving current train stats to {train_stats_save_path}...')
@@ -228,8 +227,8 @@ def main():
     # TODO(ryancao): Actually pull the ResNet model! ---
     print('--> Setting up model...')
     model = models.get_model(args.model_type)
-    # torch.cuda.set_device(constants.GPU)
-    # model = model.cuda(constants.GPU)
+    torch.cuda.set_device(constants.GPU)
+    model = model.cuda(constants.GPU)
     print('Done!\n')
 
     # --- Optimizer ---
@@ -238,7 +237,9 @@ def main():
     print('Done!\n')
     
     # --- Loss fn ---
-    criterion = nn.BCEWithLogitsLoss()#.cuda(constants.GPU)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.Tensor([args.pos_weight] * len(constants.LABELS_TO_IDXS))).cuda(constants.GPU)
+    # criterion = nn.CrossEntropyLoss().cuda(constants.GPU)
+    # criterion = models.WeightedBCEWithLogitsLoss(weights=[1, 1])
 
     # --- Train ---
     train_losses, train_ious, val_losses, val_ious =\

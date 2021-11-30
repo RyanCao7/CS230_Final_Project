@@ -25,6 +25,7 @@ def get_classify_train_args():
     parser.add_argument('--lr', type=float, default=constants.DEFAULT_CLASSIFICATION_LR)
     parser.add_argument('--num-epochs', type=int, default=constants.DEFAULT_CLASSIFICATION_EPOCHS)
     parser.add_argument('--optimizer', type=str, default='adam')
+    parser.add_argument('--pos-weight', type=float, default=constants.DEFAULT_POS_WEIGHT)
 
     # --- Save dir ---
     parser.add_argument('--model-name', type=str, required=True, help='Where to save model weights')
@@ -36,8 +37,10 @@ def get_classify_train_args():
     
     # --- Other ---
     parser.add_argument('--eval-every', type=int, default=5, help='Eval every n epochs.')
+    parser.add_argument('--save-every', type=int, default=3, help='Save every n epochs.')
     parser.add_argument('--print-every', type=int, default=1, help='Print every n epochs.')
-    parser.add_argument('--print-every-minibatch', type=int, default=50, help='Print stats every n minibatches.')
+    parser.add_argument('--print-every-minibatch', type=int, default=100, help='Print stats every n minibatches.')
+    
     
     args = parser.parse_args()
     return args
