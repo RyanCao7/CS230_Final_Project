@@ -103,6 +103,9 @@ def preprocess_train_val_test_data():
 
     # --- Process image labels ---
     image_names_to_idx, idx_to_image_names, idx_to_labels, labels_to_idx, image_labels, stacked_labels = process_labels()
+    
+    print('Index to labels:')
+    print(idx_to_labels)
 
     # --- Go through all images in all image directories ---
     for image_dir in sorted(glob.glob(os.path.join(constants.DATASET_DIR, 'images_0*'))):
@@ -127,4 +130,4 @@ def preprocess_train_val_test_data():
     
 
 if __name__ == '__main__':
-    # preprocess_train_val_test_data()
+    preprocess_train_val_test_data()

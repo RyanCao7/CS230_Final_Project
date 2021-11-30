@@ -5,7 +5,7 @@ import os
 sns.set_theme()
 
 
-def plot_losses_accuracies(losses_dict, accuracies_dict, viz_path, prefix='train'):
+def plot_losses_ious(losses_dict, ious_dict, viz_path, prefix='train'):
     '''
     Plots and saves.
     '''
@@ -13,8 +13,8 @@ def plot_losses_accuracies(losses_dict, accuracies_dict, viz_path, prefix='train
     
     loss_epochs = list(losses_dict.keys())
     losses = list(losses_dict[x] for x in loss_epochs)
-    accuracy_epochs = list(accuracies_dict.keys())
-    accuracies = list(accuracies_dict[x] for x in accuracy_epochs)
+    iou_epochs = list(ious_dict.keys())
+    ious = list(ious_dict[x] for x in iou_epochs)
 
     loss_path = os.path.join(viz_path, prefix + '_losses.png')
     print(f'Saving losses to {loss_path}...')
@@ -26,12 +26,12 @@ def plot_losses_accuracies(losses_dict, accuracies_dict, viz_path, prefix='train
     fig.savefig(loss_path)
     plt.clf()
 
-    acc_path = os.path.join(viz_path, prefix + '_accuracies.png')
-    print(f'Saving accuracies to {acc_path}...')
-    acc_plot = sns.lineplot(x=accuracy_epochs, y=accuracies)
-    plt.title(title_prefix + ' Accuracy / Epoch')
-    plt.ylabel(title_prefix + ' Acc')
+    iou_path = os.path.join(viz_path, prefix + '_ious.png')
+    print(f'Saving ious to {iou_path}...')
+    iou_plot = sns.lineplot(x=iou_epochs, y=ious)
+    plt.title(title_prefix + ' Iou / Epoch')
+    plt.ylabel(title_prefix + ' iou')
     plt.xlabel('Epoch')
-    fig = acc_plot.get_figure()
-    fig.savefig(acc_path)
+    fig = iou_plot.get_figure()
+    fig.savefig(iou_path)
     plt.clf()

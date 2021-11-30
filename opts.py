@@ -35,8 +35,9 @@ def get_classify_train_args():
     #                     default='logits_dataset')
     
     # --- Other ---
-    parser.add_argument('--eval-every', type=int, default=10, help='Eval every n epochs.')
+    parser.add_argument('--eval-every', type=int, default=5, help='Eval every n epochs.')
     parser.add_argument('--print-every', type=int, default=1, help='Print every n epochs.')
+    parser.add_argument('--print-every-minibatch', type=int, default=50, help='Print stats every n minibatches.')
     
     args = parser.parse_args()
     return args
