@@ -117,7 +117,7 @@ MODEL_TYPES = [
 
 # --- Training ---
 DEFAULT_CLASSIFICATION_EPOCHS = 250
-DEFAULT_CLASSIFICATION_LR = 3e-4
+DEFAULT_CLASSIFICATION_LR = 1e-3 # 3e-4 initially
 DEFAULT_POS_WEIGHT = 10 # --- How much to weight positive examples over negative ones for each class ---
 GPU = 'cuda:0'
 

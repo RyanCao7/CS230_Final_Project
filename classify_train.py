@@ -182,6 +182,8 @@ def save_train_stats(train_losses, train_ious, val_losses, val_ious, args):
         'train_labels_dir': args.train_labels_dir,
         'val_examples_dir': args.val_examples_dir,
         'val_labels_dir': args.val_labels_dir,
+        'learning_rate': args.lr,
+        'optimizer': args.optimizer,
     }
     train_stats_save_path = os.path.join(model_save_dir, 'train_stats.json')
     print(f'Saving current train stats to {train_stats_save_path}...')
@@ -234,12 +236,12 @@ def main():
     # --- Optimizer ---
     print('--> Setting up optimizer/criterion...')
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
-    print('Done!\n')
     
     # --- Loss fn ---
     pos_weight = torch.Tensor(constants.get_indexes_to_weights())
-    print(pos_weight)
+    print(f'Here are the weights: {pos_weight}')
     criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda(constants.GPU)
+    print('Done!\n')
 
     # --- Train ---
     train_losses, train_ious, val_losses, val_ious =\
