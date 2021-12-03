@@ -30,20 +30,21 @@ def update_confusion_matrix(confusion_matrix, y_true, y_pred):
     """
     y_correct = y_true * y_pred
     y_incorrect = (y_correct + y_pred) % 2
-    for (row_y_true, row_y_pred) in zip(y_true, y_pred):
+
+    for row_idx, (row_y_true, row_y_pred) in enumerate(zip(y_true, y_pred)):
         for idx in range(len(row_y_true)):
             if row_y_true[idx] > 0:
                 num_labels = torch.sum(row_y_true).item()
-                addendum = y_incorrect[idx] / num_labels
+                addendum = y_incorrect[row_idx] / num_labels
 
                 # --- Add 1 / k for all the incorrect labels ---
                 confusion_matrix[idx] += addendum
 
                 # --- Add 1 for any self-correct labels ---
-                confusion_matrix[idx][idx] += y_pred[idx]
+                confusion_matrix[idx][idx] += row_y_pred[idx]
 
 
-def eval_model(model, val_dataloader, criterion, args):
+def eval_model(model, val_dataloader, criterion, args, user_choice):
     '''
     Evaluates model over validation set.
     '''
@@ -51,8 +52,11 @@ def eval_model(model, val_dataloader, criterion, args):
     total_loss = 0
     total_iou = 0
     total_examples = 0
-
     model.eval()
+    viz_save_dir = constants.get_classification_viz_save_dir(args.model_type, args.model_name)
+    
+    # --- Set up confusion matrix ---
+    confusion_matrix = torch.zeros(len(constants.IDXS_TO_LABELS), len(constants.IDXS_TO_LABELS))
 
     with torch.no_grad():
         for idx, (x, y) in tqdm(enumerate(val_dataloader), total=len(val_dataloader)):
@@ -83,6 +87,16 @@ def eval_model(model, val_dataloader, criterion, args):
             avg_iou = total_iou / total_examples
             if idx % args.print_every_minibatch == 0:
                 tqdm.write(f'Val minibatch number: {idx} | Avg loss: {avg_loss} | Avg iou: {avg_iou}')
+            
+            # --- Update confusion matrix ---
+            update_confusion_matrix(confusion_matrix, y, preds)
+            
+            # if idx == 100:
+            #     save_path = os.path.join(viz_save_dir, 'DELETE_' +  user_choice[:-len('.pth')] + '_confusion_matrix.png')
+            #     viz_utils.plot_confusion_matrix(confusion_matrix, save_path, title='Val Dataset Confusion Matrix')
+
+        save_path = os.path.join(viz_save_dir, user_choice[:-len('.pth')] + '_confusion_matrix.png')
+        viz_utils.plot_confusion_matrix(confusion_matrix, save_path, title='Val Dataset Confusion Matrix')
 
     return avg_loss, avg_iou, total_examples
 
@@ -113,7 +127,7 @@ def main():
 
     # --- Setup dataset ---
     print('--> Setting up dataset...')
-    val_dataset = dataset.CXR_Classification_Dataset(mode='train')
+    val_dataset = dataset.CXR_Classification_Dataset(mode='val')
     print('Done!\n')
 
     # --- Dataloaders ---
@@ -125,7 +139,7 @@ def main():
     # TODO(ryancao): Actually pull the ResNet model! ---
     print('--> Setting up model...')
     model = models.get_model(args.model_type)
-    model.load_state_dict(torch.load(model_weights_path))
+    model.load_state_dict(torch.load(model_weights_path, map_location=torch.device('cpu')))
     # torch.cuda.set_device(constants.GPU)
     # model = model.cuda(constants.GPU)
     print('Done!\n')
@@ -136,7 +150,7 @@ def main():
     criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)#.cuda(constants.GPU)
 
     # --- Run eval ---
-    avg_loss, avg_iou, total_examples = eval_model(model, val_dataloader, criterion, args)
+    avg_loss, avg_iou, total_examples = eval_model(model, val_dataloader, criterion, args, user_choice)
     print(f'\nFinal loss: {avg_loss} | Final iou: {avg_iou} | Total number of val examples: {total_examples}')
 
 

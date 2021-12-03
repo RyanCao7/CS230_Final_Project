@@ -4,11 +4,30 @@ import seaborn as sns
 import os
 sns.set_theme()
 
+import constants
+
+
+def plot_confusion_matrix(confusion_matrix, viz_path, title):
+    """
+    Graphs a confusion matrix.
+    """
+    labels = [constants.IDXS_TO_LABELS[i] for i in range(len(constants.IDXS_TO_LABELS))]
+    df_cm = pd.DataFrame(confusion_matrix.numpy(), index = labels, columns = labels)
+    plt.figure(figsize = (15, 12))
+    cm_plot = sns.heatmap(df_cm, annot=True)
+    plt.title(title)
+    plt.ylabel('Disease Labels')
+    plt.xlabel('Disease Labels')
+    fig = cm_plot.get_figure()
+    print(f'Saving confusion matrix to {viz_path}...')
+    fig.savefig(viz_path)
+    plt.clf()
+
 
 def plot_losses_ious(losses_dict, ious_dict, viz_path, prefix='train'):
-    '''
+    """
     Plots and saves.
-    '''
+    """
     title_prefix = str.upper(prefix[0]) + prefix[1:]
     
     loss_epochs = list(losses_dict.keys())
