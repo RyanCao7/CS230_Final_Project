@@ -5,6 +5,7 @@ MODES = ['train', 'val', 'test']
 DATASET_DIR = 'dataset'
 CLASSIFICATION_DATA_DIR = 'numpy_classification_data'
 DETECTION_DATA_DIR = 'numpy_bbox_data'
+STUDENT_DATA_DIR = 'student_train_data'
 TRAIN_DIR = 'train'
 VAL_DIR = 'val'
 TEST_DIR = 'test'
@@ -50,22 +51,42 @@ IDXS_TO_LABELS = {
     14: 'Consolidation'
 }
 
+# --- These weights use "No Finding" as the baseline, as opposed to the total ---
+# WEIGHTS = {
+#     'Cardiomegaly': 21.743876080691642,
+#     'Emphysema': 23.990858505564386,
+#     'Effusion': 4.532627468649095,
+#     'No Finding': 1.0,
+#     'Hernia': 265.9074889867842,
+#     'Infiltration': 3.034130893736805,
+#     'Mass': 10.439467312348668,
+#     'Nodule': 9.534196809350814,
+#     'Atelectasis': 5.221991521757937,
+#     'Pneumothorax': 11.384571859675594,
+#     'Pleural_Thickening': 17.831905465288035,
+#     'Pneumonia': 42.18099231306778,
+#     'Fibrosis': 35.801304863582445,
+#     'Edema': 26.209726443768997,
+#     'Consolidation': 12.933576173130492,
+# }
+
+# --- These weights are correct, but are hard-capped at 100 ---
 WEIGHTS = {
-    'Cardiomegaly': 21.743876080691642,
-    'Emphysema': 23.990858505564386,
-    'Effusion': 4.532627468649095,
-    'No Finding': 1.0,
-    'Hernia': 265.9074889867842,
-    'Infiltration': 3.034130893736805,
-    'Mass': 10.439467312348668,
-    'Nodule': 9.534196809350814,
-    'Atelectasis': 5.221991521757937,
-    'Pneumothorax': 11.384571859675594,
-    'Pleural_Thickening': 17.831905465288035,
-    'Pneumonia': 42.18099231306778,
-    'Fibrosis': 35.801304863582445,
-    'Edema': 26.209726443768997,
-    'Consolidation': 12.933576173130492,
+    'No Finding': 1.8574907639038454,
+    'Infiltration': 5.6358701115914345,
+    'Atelectasis': 9.699801020849554,
+    'Effusion': 8.419313659232559,
+    'Nodule': 17.70968251461065,
+    'Pneumothorax': 21.146737080347037,
+    'Mass': 19.391214112763752,
+    'Consolidation': 24.023998285836726,
+    'Pleural_Thickening': 33.122599704579024,
+    'Cardiomegaly': 40.389048991354464,
+    'Emphysema': 44.56279809220985,
+    'Fibrosis': 66.5005931198102,
+    'Edema': 48.68432479374729,
+    'Pneumonia': 78.35080363382251,
+    'Hernia': 100
 }
 
 # def get_indexes_to_labels():
@@ -100,6 +121,8 @@ DETECTION_TRAIN_DIR = os.path.join(DATASET_DIR, DETECTION_DATA_DIR, TRAIN_DIR)
 DETECTION_TRAIN_LABELS_DIR = os.path.join(DATASET_DIR, DETECTION_DATA_DIR, TRAIN_LABELS_DIR)
 DETECTION_VAL_DIR = os.path.join(DATASET_DIR, DETECTION_DATA_DIR, VAL_DIR)
 DETECTION_VAL_LABELS_DIR = os.path.join(DATASET_DIR, DETECTION_DATA_DIR, VAL_LABELS_DIR)
+STUDENT_TRAIN_DIR = os.path.join(DATASET_DIR, STUDENT_DATA_DIR, TRAIN_DIR)
+STUDENT_TRAIN_LABELS_DIR = os.path.join(DATASET_DIR, STUDENT_DATA_DIR, TRAIN_LABELS_DIR)
 
 # --- Models are saved under {classification/bounding_box}/{model_type}/{model_name}/{epoch}.pth ---
 CLASSIFICATION_MODEL_DIR = 'classification_models'

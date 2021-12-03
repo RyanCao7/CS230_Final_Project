@@ -22,6 +22,27 @@ import utils
 import viz_utils
 
 
+def update_confusion_matrix(confusion_matrix, y_true, y_pred):
+    """
+    Updates the given confusion matrix.
+
+    Assumes that y_true and y_pred have dimensions (B, C).
+    """
+    y_correct = y_true * y_pred
+    y_incorrect = (y_correct + y_pred) % 2
+    for (row_y_true, row_y_pred) in zip(y_true, y_pred):
+        for idx in range(len(row_y_true)):
+            if row_y_true[idx] > 0:
+                num_labels = torch.sum(row_y_true).item()
+                addendum = y_incorrect[idx] / num_labels
+
+                # --- Add 1 / k for all the incorrect labels ---
+                confusion_matrix[idx] += addendum
+
+                # --- Add 1 for any self-correct labels ---
+                confusion_matrix[idx][idx] += y_pred[idx]
+
+
 def eval_model(model, val_dataloader, criterion, args):
     '''
     Evaluates model over validation set.
@@ -37,8 +58,8 @@ def eval_model(model, val_dataloader, criterion, args):
         for idx, (x, y) in tqdm(enumerate(val_dataloader), total=len(val_dataloader)):
 
             # --- Move to GPU ---
-            x = x.cuda(constants.GPU, non_blocking=True)
-            y = y.cuda(constants.GPU, non_blocking=True)
+            # x = x.cuda(constants.GPU, non_blocking=True)
+            # y = y.cuda(constants.GPU, non_blocking=True)
 
             # --- Compute logits ---
             logits = model(x)
@@ -105,14 +126,14 @@ def main():
     print('--> Setting up model...')
     model = models.get_model(args.model_type)
     model.load_state_dict(torch.load(model_weights_path))
-    torch.cuda.set_device(constants.GPU)
-    model = model.cuda(constants.GPU)
+    # torch.cuda.set_device(constants.GPU)
+    # model = model.cuda(constants.GPU)
     print('Done!\n')
     
     # --- Loss fn ---
     pos_weight = torch.Tensor(constants.get_indexes_to_weights())
     print(pos_weight)
-    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda(constants.GPU)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)#.cuda(constants.GPU)
 
     # --- Run eval ---
     avg_loss, avg_iou, total_examples = eval_model(model, val_dataloader, criterion, args)

@@ -18,6 +18,7 @@ def get_preprocess_transforms():
     preprocess_transforms = T.Compose([
         # T.CenterCrop(256),
         T.Resize(224),
+        # T.Resize(448),
         T.Normalize(
             mean=[129.1120817169278],
             std=[64.12445895568287]
